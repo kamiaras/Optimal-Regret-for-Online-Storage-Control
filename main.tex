@@ -39,13 +39,13 @@ The resulting regret bound is independent of policy memory length.
 For fixed retention coefficient and cost constants, the controller
 achieves $O(\sqrt T)$ regret against the best fixed infinite-memory
 policy in this class, using $O(\log T)$ memory and arithmetic operations
-per round and one cost-subgradient query. A storage-specific block
+per round and one cost-subgradient query. A two-phase storage
 construction gives a matching lower bound against every causal feasible
 controller, including randomized controllers. Writing
 $\tau=(1-\alpha)^{-1}$, the minimax expected regret is
 $\Theta(\sqrt T\min\{T,\tau\}^{3/2})$ for every finite-memory
 simplex policy class and its infinite-memory extension, when
-$\alpha\in[1/2,1)$, $T\ge4$, and the positive cost constants are fixed.
+$\alpha\in[1/2,1)$, $T\ge8$, and the positive cost constants are fixed.
 This identifies the joint horizon and retention-time dependence for
 these policy benchmarks.
 \end{abstract}
@@ -95,7 +95,7 @@ infinite-memory extension, the minimax expected regret has order
 =
 \min\{T^2,\tau^{3/2}\sqrt T\}
 \]
-when $\alpha\in[1/2,1)$, $T\ge4$, and $L_x,L_u>0$ are fixed.
+when $\alpha\in[1/2,1)$, $T\ge8$, and $L_x,L_u>0$ are fixed.
 The construction uses only binary arrivals, affine state costs, and
 two comparator policies, and applies to every causal feasible
 controller, including randomized controllers. It identifies both the
@@ -1241,210 +1241,159 @@ is applied are bounded, because $x_t\le\tau$ and the horizon is finite.
 The lemma converts each averaged lower bound into a deterministic
 oblivious instance.
 
-\subsection{A block construction}
+\subsection{A two-phase storage lottery}
 
 Independent random signs held fixed within blocks expose the
 cost of memory; see, for example, the lower bounds of
 Kumar et al.~\cite{kumar2023unbounded}.
-Our construction uses recharge, clearing, holding, and reward phases
-to realize a retention-dependent separation under storage feasibility.
-It requires no state resets and uses the two endpoint policies
-in \eqref{eq:endpoints} as comparators.
+Our construction first charges rent for stored energy, then uses a
+fair coin to choose between a free refill and a reward for retained
+energy. These are two phases of a single block. Refills occur only
+on the zero-cost outcome, so the controller cannot collect new
+arrivals after learning that retained energy will be rewarded.
+Pairing complementary coin sequences gives deterministic coefficients
+for a random-walk comparison. The comparators are the hold policy
+$y^{(0)}$ and the spend policy $y^{(1)}$ in \eqref{eq:endpoints}.
 
-\begin{theorem}[Block lower bound]
+\begin{theorem}[Two-phase lower bound]
 \label{thm:block}
-Let $b\ge1$ be an integer and $T\ge3b+1$. Define
+Let $b\ge2$ be an integer and $T\ge4b$. Define
 \[
-S_b=\frac{1-\alpha^b}{1-\alpha},
-\qquad
-B=3b+1,
-\qquad
-N=\left\lfloor\frac TB\right\rfloor.
+S_j=\sum_{i=0}^{j-1}\alpha^i=\frac{1-\alpha^j}{1-\alpha},
+\qquad B=2b,
+\qquad N=\left\lfloor\frac TB\right\rfloor.
 \]
 Then
 \begin{equation}
 \label{eq:block-bound}
 \mathfrak R_T(\mathcal C)
 \ge
-\frac{L_x\alpha^{b+1}S_b^2}{4\sqrt2}\sqrt N.
+\frac{L_x\alpha^{b+1}S_bS_{b-1}}{8\sqrt2}\sqrt{N-1}.
 \end{equation}
 The lower bound holds with binary arrivals and affine costs
 depending only on the state.
 \end{theorem}
 
 \begin{proof}
-Fix a causal feasible controller. Draw independent uniform
-signs $\xi_1,\ldots,\xi_N\in\{-1,1\}$, independently of its
-randomization. Partition the first $NB$ rounds into blocks.
-Block $n$ consists of the following successive phases:
+Fix a causal feasible controller. Draw independent uniform signs
+$\xi_1,\ldots,\xi_N\in\{-1,1\}$ before play, independently of its
+randomization. Each block has $2b$ rounds:
 \[
 \begin{array}{c|c|c|c}
 \text{Phase}&\text{Rounds}&w_t&c_t(x,u)\\ \hline
-\text{Recharge}&b&1&0\\
-\text{Clearing}&1&0&0\\
-\text{Holding}&b&0&(L_x/2)\alpha^b x\\
-\text{Reward}&b&0&-(L_x/2)(1-\xi_n)x
+\text{Rent}&b&0&(L_x/2)\alpha^b x\\
+\text{Lottery: }\xi_n=+1&b&\text{free refill}&0\\
+\text{Lottery: }\xi_n=-1&b&0&-L_xx
 \end{array}
 \]
-All remaining rounds have zero arrival and zero cost.
-Every realization is admissible: state slopes lie in
-$[-L_x,L_x]$, and action slopes are zero.
+The last two rows are alternative outcomes of one lottery phase.
+A free refill supplies one unit in its first $b-1$ rounds and zero
+in its last round, allowing the spend policy to finish the block
+empty. All remaining rounds have zero arrival and zero cost.
+Every realization is admissible: state slopes have magnitude at
+most $L_x$, action slopes are zero, and arrivals lie in $\{0,1\}$.
+Arrivals and costs may be correlated; the whole sequence is still
+fixed before play, independently of the controller.
 
-The policy $y^{(1)}$ satisfies $x_t(y^{(1)})=w_{t-1}$.
-Its state is therefore zero throughout every holding and reward
-phase, giving
+\emph{The online controller has nonnegative expected cost.}
+Let $\sigma_n=(n-1)B+b+1$ be the first lottery round and put
+$z_n=x_{\sigma_n}$ and $V_n=(L_x/2)S_bz_n$.
+During rent there are no arrivals, so
+$z_n\le\alpha^{b-j}x_{\sigma_n-b+j}$ for $j=0,\ldots,b-1$.
+Consequently,
+\[
+\frac{L_x}{2}\alpha^b\sum_{j=0}^{b-1}x_{\sigma_n-b+j}
+\ge\frac{L_x}{2}\sum_{j=0}^{b-1}\alpha^jz_n=V_n.
+\]
+A refill adds no cost. On the reward outcome there are no arrivals,
+so $x_{\sigma_n+j}\le\alpha^jz_n$ and the reward is at most
+$L_xS_bz_n=2V_n$. Thus the block cost satisfies
+\[
+C_n\ge\xi_nV_n,\qquad \E[J_T^{\mathrm{on}}]\ge0.
+\]
+The expectation follows because $V_n$ is determined before the
+independent sign $\xi_n$ is revealed, as in Lemma~\ref{lem:averaging}.
+The hold policy attains equality in the block inequality.
+The spend policy has $x_t(y^{(1)})=w_{t-1}$ and is empty during
+every rental phase and reward outcome, so $J_T(y^{(1)})=0$.
+
+\emph{Complementary coins give a deterministic comparison.}
+Let $z_n(\boldsymbol\xi)$ denote the hold policy's state at the first
+lottery round and write its cost as
+\[
+J(\boldsymbol\xi)=\frac{L_x}{2}S_b
+\sum_{n=1}^N\xi_nz_n(\boldsymbol\xi),
+\qquad \E[J(\boldsymbol\xi)]=0.
+\]
+The mean is zero because each $z_n(\boldsymbol\xi)$ depends only on
+earlier coins. Pair $\boldsymbol\xi$ with $-\boldsymbol\xi$.
+Their arrivals sum to a fixed refill schedule, so the linear hold
+dynamics make $z_n(\boldsymbol\xi)+z_n(-\boldsymbol\xi)$ deterministic.
+For $n\ge2$, the preceding block's combined refill alone contributes
+$\alpha^{b+1}S_{b-1}$ to this sum. Hence
 \begin{equation}
-\label{eq:one-cost}
-J_T(y^{(1)})=0.
+\label{eq:complementary-coins}
+\begin{aligned}
+\frac{J(\boldsymbol\xi)-J(-\boldsymbol\xi)}2
+&=\sum_{n=1}^N a_n\xi_n,\qquad a_1=0,\\
+a_n&=\frac{L_xS_b}{4}
+\bigl[z_n(\boldsymbol\xi)+z_n(-\boldsymbol\xi)\bigr]
+\ge\frac{L_x}{4}\alpha^{b+1}S_bS_{b-1}\quad(n\ge2).
+\end{aligned}
 \end{equation}
-No reset is imposed on the online state or on the state of the
-no-withdrawal comparator.
-
-Let
+Symmetry, the triangle inequality, and \eqref{eq:khintchine},
+applied to the deterministic coefficients $a_n$, give
 \[
-\sigma_n=(n-1)B+2b+2
-\]
-be the first reward round of block $n$.
-For any feasible trajectory, denote its block cost by $C_n$ and set
-\[
-V_n=\frac{L_x}{2}S_bx_{\sigma_n}.
-\]
-There are no arrivals during the holding and reward phases, so
-$0\le x_{t+1}\le\alpha x_t$. For $j=0,\ldots,b-1$,
-\begin{equation}
-\label{eq:block-stock}
-\alpha^b x_{\sigma_n-b+j}
-\ge\alpha^j x_{\sigma_n}
-\ge x_{\sigma_n+j}.
-\end{equation}
-Since $1-\xi_n\ge0$,
-\begin{align}
-\label{eq:block-pathwise}
-C_n
-&=
-\frac{L_x}{2}\sum_{j=0}^{b-1}
-\left(
-\alpha^b x_{\sigma_n-b+j}
--(1-\xi_n)x_{\sigma_n+j}
-\right)\nonumber\\
-&\ge
-\frac{L_x}{2}\sum_{j=0}^{b-1}
-\left(
-\alpha^j x_{\sigma_n}
--(1-\xi_n)\alpha^j x_{\sigma_n}
-\right)
-=\xi_nV_n.
-\end{align}
-Equality holds when no withdrawals are made in these two phases.
-
-The online value $V_n$ is determined before the first reward
-cost reveals $\xi_n$. Conditional on the controller's random
-seed and all information available before that revelation,
-$\xi_n$ has mean zero. Consequently,
-\begin{equation}
-\label{eq:online-nonnegative}
-\E[J_T^{\mathrm{on}}]
-\ge\sum_{n=1}^N\E[\xi_nV_n]=0.
-\end{equation}
-
-For the no-withdrawal policy $y^{(0)}$, define
-\[
-\overline V_n
-=
-\frac{L_x}{2}S_bx_{\sigma_n}(y^{(0)}).
-\]
-These coefficients are deterministic because arrivals are
-deterministic and the policy ignores costs.
-If $s_n=(n-1)B+1$ is the first recharge round, then
-\[
-x_{s_n+b}(y^{(0)})
-=
-\alpha^b x_{s_n}(y^{(0)})+S_b
-\ge S_b.
-\]
-The clearing and holding phases have $b+1$ rounds with no
-arrivals or withdrawals. Therefore,
-\begin{equation}
-\label{eq:comparator-amplitude}
-x_{\sigma_n}(y^{(0)})\ge\alpha^{b+1}S_b,
-\qquad
-\overline V_n\ge\frac{L_x}{2}\alpha^{b+1}S_b^2.
-\end{equation}
-Equality in \eqref{eq:block-pathwise} gives
-\[
-J_T(y^{(0)})=\sum_{n=1}^N\overline V_n\xi_n,
-\qquad
-\E[J_T(y^{(0)})]=0.
+\E|J(\boldsymbol\xi)|
+\ge\frac12\E|J(\boldsymbol\xi)-J(-\boldsymbol\xi)|
+=\E\left|\sum_{n=1}^Na_n\xi_n\right|
+\ge\frac1{\sqrt2}\left(\sum_{n=1}^Na_n^2\right)^{1/2}.
 \]
 
-Using \eqref{eq:one-cost}, \eqref{eq:online-nonnegative},
-and $-\min\{0,z\}=(|z|-z)/2$, we obtain
-\begin{align*}
+\emph{Hindsight selects between hold and spend.}
+Using $\min\{0,J\}=(J-|J|)/2$ and $\E J=0$, we obtain
+\[
 \E[\Reg_T(\mathcal C)]
-&\ge
-\E\left[
-J_T^{\mathrm{on}}-\min\{0,J_T(y^{(0)})\}
-\right]\\
-&\ge
-\frac12\E\left|\sum_{n=1}^N\overline V_n\xi_n\right|\\
-&\ge
-\frac1{2\sqrt2}
-\left(\sum_{n=1}^N\overline V_n^2\right)^{1/2}\\
-&\ge
-\frac{L_x\alpha^{b+1}S_b^2}{4\sqrt2}\sqrt N.
-\end{align*}
-The penultimate inequality is \eqref{eq:khintchine}.
-Fixing a sign sequence that attains at least this average
-produces a deterministic oblivious instance.
-Since the controller was arbitrary, the minimax bound follows.
+\ge\E[J_T^{\mathrm{on}}-\min\{0,J(\boldsymbol\xi)\}]
+\ge\frac12\E|J(\boldsymbol\xi)|.
+\]
+Together with \eqref{eq:complementary-coins}, this proves
+\eqref{eq:block-bound} in expectation over the coins and controller.
+Lemma~\ref{lem:averaging} fixes a sign sequence attaining at least
+this average. Since the controller was arbitrary, the minimax
+bound follows.
 \end{proof}
 
 \begin{corollary}[Finite-horizon lower bound]
 \label{cor:finite-lower}
-Let $\alpha\in[1/2,1)$, $T\ge4$, and
-$M=\min\{T,\tau\}$. Then
+Let $\alpha\in[1/2,1)$, $T\ge8$, and
+$M=\min\{T,\tau\}$. There is an absolute constant $c>0$ such that
 \begin{equation}
 \label{eq:finite-lower}
 \mathfrak R_T(\mathcal C)
-\ge
-\frac{L_x}{4096\sqrt2}\sqrt T\,M^{3/2}.
+\ge cL_x\sqrt T\,M^{3/2}.
 \end{equation}
 \end{corollary}
 
 \begin{proof}
-Choose
+Choose $b=\max\{2,\lfloor M/4\rfloor\}$.
+Then $M/8\le b\le T/4$ and $N-1\ge T/(8b)$:
+for $r=T/(2b)\ge2$, $\lfloor r\rfloor-1\ge r/4$.
+If $b\ge3$, then $b\le\tau/4$. Bernoulli's inequality gives
 \[
-b=
-\min\{\lfloor T/4\rfloor,\lfloor\tau/2\rfloor\}.
+\alpha^{b+1}\ge\frac12,\qquad
+S_b\ge\frac b2,\qquad S_{b-1}\ge\frac b4.
 \]
-Since $T\ge4$ and $\tau\ge2$,
-\[
-b\ge1,\qquad b\ge M/8,\qquad B=3b+1\le4b\le T.
-\]
-Bernoulli's inequality gives
-\[
-\alpha^b=(1-1/\tau)^b\ge1-b/\tau\ge\frac12.
-\]
-Hence
-\[
-\alpha^{b+1}\ge\frac14,
-\qquad
-S_b\ge b\alpha^b\ge\frac b2,
-\qquad
-N=\left\lfloor\frac TB\right\rfloor
-\ge\frac{T}{2B}\ge\frac{T}{8b}.
-\]
-Substitution into \eqref{eq:block-bound} yields
+If $b=2$, use $\alpha^3\ge1/8$, $S_2\ge3/2$, and $S_1=1$.
+In both cases $\alpha^{b+1}S_bS_{b-1}$ is at least an absolute
+positive constant times $b^2$. Substitution into
+\eqref{eq:block-bound} therefore gives
 \[
 \mathfrak R_T(\mathcal C)
-\ge
-\frac{L_x}{4\sqrt2}\frac14\frac{b^2}{4}
-\sqrt{\frac{T}{8b}}
-=
-\frac{L_x}{256}\sqrt T\,b^{3/2}
-\ge
-\frac{L_x}{4096\sqrt2}\sqrt T\,M^{3/2}.
+\ge c_0L_x\sqrt T\,b^{3/2}
+\ge cL_x\sqrt T\,M^{3/2}
 \]
+for absolute constants $c_0,c>0$.
 \end{proof}
 
 \begin{corollary}[Beyond the retention time]
@@ -1453,45 +1402,14 @@ If $\alpha\in[1/2,1)$ and $T\ge10\tau$, then
 \begin{equation}
 \label{eq:retention-lower}
 \mathfrak R_T(\mathcal C)
-\ge
-\frac{L_x}{128\sqrt{20}}\tau^{3/2}\sqrt T.
+\ge cL_x\tau^{3/2}\sqrt T,
 \end{equation}
+where $c>0$ is the constant in Corollary~\ref{cor:finite-lower}.
 \end{corollary}
 
 \begin{proof}
-Set
-\[
-q=\frac{\log2}{\log(1/\alpha)},
-\qquad
-b=\lceil q\rceil.
-\]
-Since $q\le b<q+1$ and $\alpha^q=1/2$,
-\[
-\frac\alpha2<\alpha^b\le\frac12,
-\qquad
-S_b\ge\frac\tau2,
-\qquad
-\alpha^{b+1}>\frac{\alpha^2}{2}\ge\frac18.
-\]
-Using $-\log\alpha\ge1-\alpha=1/\tau$,
-\[
-B=3b+1<3\tau\log2+4<5\tau.
-\]
-Since $T\ge10\tau>2B$,
-\[
-N=\left\lfloor\frac TB\right\rfloor
-\ge\frac{T}{2B}>\frac{T}{10\tau}.
-\]
-Theorem~\ref{thm:block} gives
-\[
-\mathfrak R_T(\mathcal C)
-\ge
-\frac{L_x}{4\sqrt2}\frac18
-\left(\frac\tau2\right)^2
-\sqrt{\frac{T}{10\tau}}
-=
-\frac{L_x}{128\sqrt{20}}\tau^{3/2}\sqrt T.
-\]
+Since $\tau\ge2$, the assumptions give $T\ge8$ and
+$\min\{T,\tau\}=\tau$. Apply Corollary~\ref{cor:finite-lower}.
 \end{proof}
 
 \subsection{Action costs and small horizons}
@@ -1604,18 +1522,19 @@ Theorem~\ref{thm:sign} therefore gives
 For fixed positive cost constants, the independent-sign bound
 has order $\tau\sqrt T$ as retention time grows and the horizon
 exceeds the retention time.
-The block construction strengthens this dependence to
+The two-phase construction strengthens this dependence to
 $\tau^{3/2}\sqrt T$.
 
 \subsection{Matching minimax rate}
 
 \begin{theorem}[Matching horizon and retention dependence]
 \label{thm:minimax}
-Let $\alpha\in[1/2,1)$, $T\ge4$, and $M=\min\{T,\tau\}$.
-For every finite-memory class $\CH$, $H\ge1$, and for $\CI$,
+Let $\alpha\in[1/2,1)$, $T\ge8$, and $M=\min\{T,\tau\}$.
+There is an absolute constant $c>0$ such that, for every
+finite-memory class $\CH$, $H\ge1$, and for $\CI$,
 \begin{equation}
 \label{eq:matching}
-\frac{L_x}{4096\sqrt2}\sqrt T\,M^{3/2}
+cL_x\sqrt T\,M^{3/2}
 \le
 \mathfrak R_T(\mathcal C)
 \le
@@ -1678,9 +1597,9 @@ controls optimization and tracking error uniformly in policy memory.
 For fixed model parameters, this yields $O(\sqrt T)$ regret against
 the best fixed infinite-memory SDAC policy with logarithmic memory
 and arithmetic per round, excluding the cost-subgradient query.
-The storage-specific block construction establishes the matching
+The two-phase storage construction establishes the matching
 rate $\Theta(\sqrt T\min\{T,\tau\}^{3/2})$ for
-$\alpha\in[1/2,1)$, $T\ge4$, and fixed $L_x,L_u>0$.
+$\alpha\in[1/2,1)$, $T\ge8$, and fixed $L_x,L_u>0$.
 The optimality statement concerns these policy benchmarks under
 full cost feedback and without active capacity saturation; the
 lower bound holds even when the controller is any causal feasible

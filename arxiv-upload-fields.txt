@@ -14,10 +14,10 @@ AUTHORS
 Kamiar Asgari, Michael J. Neely
 
 ABSTRACT
-We study online control of a scalar storage system with adversarial nonnegative arrivals, known retention coefficient, and convex costs depending on both state and action. Each action must respect current resource availability and is chosen before the current arrival and cost function are revealed. For the existing simplex disturbance-action policy class, we give an exact reparameterization by cumulative allocation fractions and a decay-weighted projected subgradient update. The resulting regret bound is independent of policy memory length. For fixed retention coefficient and cost constants, the controller achieves $O(\sqrt T)$ regret against the best fixed infinite-memory policy in this class, using $O(\log T)$ memory and arithmetic operations per round and one cost-subgradient query. A storage-specific block construction gives a matching lower bound against every causal feasible controller, including randomized controllers. Writing $\tau=(1-\alpha)^{-1}$, the minimax expected regret is $\Theta(\sqrt T\min\{T,\tau\}^{3/2})$ for every finite-memory simplex policy class and its infinite-memory extension, when $\alpha\in[1/2,1)$, $T\ge4$, and the positive cost constants are fixed. This identifies the joint horizon and retention-time dependence for these policy benchmarks.
+We study online control of a scalar storage system with adversarial nonnegative arrivals, known retention coefficient, and convex costs depending on both state and action. Each action must respect current resource availability and is chosen before the current arrival and cost function are revealed. For the existing simplex disturbance-action policy class, we give an exact reparameterization by cumulative allocation fractions and a decay-weighted projected subgradient update. The resulting regret bound is independent of policy memory length. For fixed retention coefficient and cost constants, the controller achieves $O(\sqrt T)$ regret against the best fixed infinite-memory policy in this class, using $O(\log T)$ memory and arithmetic operations per round and one cost-subgradient query. A two-phase storage construction gives a matching lower bound against every causal feasible controller, including randomized controllers. Writing $\tau=(1-\alpha)^{-1}$, the minimax expected regret is $\Theta(\sqrt T\min\{T,\tau\}^{3/2})$ for every finite-memory simplex policy class and its infinite-memory extension, when $\alpha\in[1/2,1)$, $T\ge8$, and the positive cost constants are fixed. This identifies the joint horizon and retention-time dependence for these policy benchmarks.
 
 COMMENTS
-21 pages
+20 pages
 
 PRIMARY CATEGORY (recommended)
 eess.SY - Systems and Control
@@ -64,9 +64,9 @@ VERIFICATION
 The ZIP contains only the three required source/bibliography files.
 The ZIP was extracted and compiled independently with pdfLaTeX in two passes.
 The final build has no LaTeX warnings, missing citations, or undefined references.
-All 21 pages have the same extracted text as the reviewed reference PDF.
-The current local reference PDF has 21 pages and 18 bibliography entries.
-Abstract length: 1290 characters.
+All 20 pages have the same extracted text as the reviewed reference PDF.
+The current local reference PDF has 20 pages and 18 bibliography entries.
+Abstract length: 1285 characters.
 
 OFFICIAL GUIDANCE
 Source packaging: https://info.arxiv.org/help/submit_tex.html
