@@ -28,7 +28,8 @@
   author    = {Zinkevich, Martin},
   booktitle = {Proceedings of the 20th International Conference on Machine Learning (ICML)},
   pages     = {928--936},
-  year      = {2003}
+  year      = {2003},
+  url       = {https://martin.zinkevich.org/publications/ICML03.pdf}
 }
 
 @inproceedings{agarwal2019online,
@@ -66,27 +67,26 @@
   url     = {https://ojs.aaai.org/index.php/AAAI/article/view/17035}
 }
 
-@misc{kumar2023unbounded,
-  title         = {Online Convex Optimization with Unbounded Memory},
-  author        = {Kumar, Raunak and Dean, Sarah and Kleinberg, Robert},
-  year          = {2024},
-  note          = {arXiv:2210.09903, version 5},
-  doi           = {10.48550/arXiv.2210.09903},
-  url           = {https://arxiv.org/abs/2210.09903},
-  eprint        = {2210.09903},
-  archiveprefix = {arXiv},
-  primaryclass  = {cs.LG}
+@inproceedings{kumar2023unbounded,
+  title     = {Online Convex Optimization with Unbounded Memory},
+  author    = {Kumar, Raunak and Dean, Sarah and Kleinberg, Robert},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {36},
+  pages     = {26229--26270},
+  year      = {2023},
+  url       = {https://papers.nips.cc/paper_files/paper/2023/hash/531230cfac80c65017ad0f85d3031edc-Abstract-Conference.html}
 }
 
 @article{shaviv2016universally,
-  title={Universally near optimal online power control for energy harvesting nodes},
+  title={Universally Near Optimal Online Power Control for Energy Harvesting Nodes},
   author={Shaviv, Dor and {\"O}zg{\"u}r, Ayfer},
   journal={IEEE Journal on Selected Areas in Communications},
   volume={34},
   number={12},
   pages={3620--3631},
   year={2016},
-  publisher={IEEE}
+  publisher={IEEE},
+  url={https://arxiv.org/abs/1511.00353}
 }
 
 @article{arafa2018online,
@@ -97,24 +97,109 @@
   number  = {5},
   pages   = {2975--2986},
   year    = {2018},
-  doi     = {10.1109/TWC.2018.2805336}
+  doi     = {10.1109/TWC.2018.2805336},
+  url     = {https://webpages.charlotte.edu/aarafa/twc18.pdf}
 }
 
-@article{10.1145/3428337,
-author = {Asgari, Kamiar and Neely, Michael J.},
-title = {Bregman-Style Online Convex Optimization with Energy Harvesting Constraints},
-year = {2020},
-issue_date = {December 2020},
-publisher = {Association for Computing Machinery},
-address = {New York, NY, USA},
-volume = {4},
-number = {3},
-url = {https://doi.org/10.1145/3428337},
-doi = {10.1145/3428337},
-abstract = {This paper considers online convex optimization (OCO) problems where decisions are constrained by available energy resources. A key scenario is optimal power control for an energy harvesting device with a finite capacity battery. The goal is to minimize a time-average loss function while keeping the used energy less than what is available. In this setup, the distribution of the randomly arriving harvestable energy (which is assumed to be i.i.d.) is unknown, the current loss function is unknown, and the controller is only informed by the history of past observations. A prior algorithm is known to achieve $O(sqrtT )$ regret by using a battery with an $O(sqrtT )$ capacity. This paper develops a new algorithm that maintains this asymptotic trade-off with the number of time steps T while improving dependency on the dimension of the decision vector from $O(sqrtn )$ to $O(sqrt\l{}og(n) )$. The proposed algorithm introduces a separation of the decision vector into amplitude and direction components. It uses two distinct types of Bregman divergence, together with energy queue information, to make decisions for each component.},
-journal = {Proc. ACM Meas. Anal. Comput. Syst.},
-month = {11},
-articleno = {52},
-numpages = {25},
-keywords = {online learning, wireless networks, mirror descent, scheduling}
+@article{asgari2020bregman,
+  author  = {Asgari, Kamiar and Neely, Michael J.},
+  title   = {{Bregman}-Style Online Convex Optimization with Energy Harvesting Constraints},
+  journal = {Proceedings of the ACM on Measurement and Analysis of Computing Systems},
+  volume  = {4},
+  number  = {3},
+  pages   = {52:1--52:25},
+  year    = {2020},
+  month   = dec,
+  doi     = {10.1145/3428337},
+  url     = {https://doi.org/10.1145/3428337}
+}
+
+@inproceedings{anava2015memory,
+  author    = {Anava, Oren and Hazan, Elad and Mannor, Shie},
+  title     = {Online Learning for Adversaries with Memory: Price of Past Mistakes},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {28},
+  pages     = {784--792},
+  year      = {2015},
+  url       = {https://papers.nips.cc/paper_files/paper/2015/hash/38913e1d6a7b94cb0f55994f679f5956-Abstract.html}
+}
+
+@inproceedings{foster2020logarithmic,
+  author    = {Foster, Dylan and Simchowitz, Max},
+  title     = {Logarithmic Regret for Adversarial Online Control},
+  booktitle = {Proceedings of the 37th International Conference on Machine Learning},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {119},
+  pages     = {3211--3221},
+  year      = {2020},
+  publisher = {PMLR},
+  url       = {https://proceedings.mlr.press/v119/foster20b.html}
+}
+
+@inproceedings{liu2023constraints,
+  author    = {Liu, Xin and Yang, Zixian and Ying, Lei},
+  title     = {Online Nonstochastic Control with Adversarial and Static Constraints},
+  booktitle = {Proceedings of the 40th International Conference on Machine Learning},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {202},
+  pages     = {22277--22288},
+  year      = {2023},
+  publisher = {PMLR},
+  url       = {https://proceedings.mlr.press/v202/liu23at.html}
+}
+
+@inproceedings{brahmbhatt2026spectral,
+  author    = {Brahmbhatt, Anand and Buzaglo, Gon and Druchyna, Sofiia and Hazan, Elad},
+  title     = {A New Approach to Controlling Linear Dynamical Systems},
+  booktitle = {International Conference on Learning Representations},
+  year      = {2026},
+  url       = {https://openreview.net/forum?id=BQIzu1T6F0}
+}
+
+@article{qin2016storage,
+  author  = {Qin, Junjie and Chow, Yinlam and Yang, Jiyan and Rajagopal, Ram},
+  title   = {Online Modified Greedy Algorithm for Storage Control Under Uncertainty},
+  journal = {IEEE Transactions on Power Systems},
+  volume  = {31},
+  number  = {3},
+  pages   = {1729--1743},
+  year    = {2016},
+  url     = {https://arxiv.org/abs/1405.7789}
+}
+
+@inproceedings{kim2016storage,
+  author    = {Kim, Anthony and Liaghat, Vahid and Qin, Junjie and Saberi, Amin},
+  title     = {Online Energy Storage Management: An Algorithmic Approach},
+  booktitle = {Approximation, Randomization, and Combinatorial Optimization.
+               Algorithms and Techniques (APPROX/RANDOM 2016)},
+  series    = {Leibniz International Proceedings in Informatics},
+  volume    = {60},
+  pages     = {12:1--12:23},
+  year      = {2016},
+  publisher = {Schloss Dagstuhl--Leibniz-Zentrum f{\"u}r Informatik},
+  doi       = {10.4230/LIPIcs.APPROX-RANDOM.2016.12},
+  url       = {https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.APPROX-RANDOM.2016.12}
+}
+
+@article{best1990isotonic,
+  author  = {Best, Michael J. and Chakravarti, Nilotpal},
+  title   = {Active Set Algorithms for Isotonic Regression; A Unifying Framework},
+  journal = {Mathematical Programming},
+  volume  = {47},
+  pages   = {425--439},
+  year    = {1990},
+  doi     = {10.1007/BF01580873},
+  url     = {https://link.springer.com/article/10.1007/BF01580873}
+}
+
+@article{beck2003mirror,
+  author  = {Beck, Amir and Teboulle, Marc},
+  title   = {Mirror Descent and Nonlinear Projected Subgradient Methods for Convex Optimization},
+  journal = {Operations Research Letters},
+  volume  = {31},
+  number  = {3},
+  pages   = {167--175},
+  year    = {2003},
+  doi     = {10.1016/S0167-6377(02)00231-6},
+  url     = {https://www.sciencedirect.com/science/article/pii/S0167637702002316}
 }

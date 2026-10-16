@@ -29,23 +29,25 @@ via Cumulative Policies}
 
 \begin{abstract}
 We study online control of a scalar storage system with adversarial
-nonnegative arrivals, storage decay, and convex costs depending on both
-state and action. The controller chooses each action before observing
-the current arrival and cost, and must respect resource availability
-at every round. We express simplex disturbance-action policies through
-cumulative allocation fractions and update these parameters by weighted
-projected subgradient descent. This gives a regret bound independent
-of the policy memory length. For fixed retention coefficient, the
-controller achieves $O(\sqrt T)$ regret against the entire
-infinite-memory policy class using $O(\log T)$ memory and arithmetic
-operations per round, apart from cost-subgradient queries.
-We also develop a block lower-bound construction that strengthens
-the dependence on storage retention time. Writing
-$\tau=(1-\alpha)^{-1}$, we establish the minimax rate
-$\Theta(\sqrt T\min\{T,\tau\}^{3/2})$ for
-$\alpha\in[1/2,1)$ and fixed positive cost constants.
-Thus the upper and lower bounds match in both horizon and retention
-time.
+nonnegative arrivals, known retention coefficient, and convex costs
+depending on both state and action. Each action must respect current
+resource availability and is chosen before the current arrival and
+cost function are revealed. For the existing simplex disturbance-action
+policy class, we give an exact reparameterization by cumulative
+allocation fractions and a decay-weighted projected subgradient update.
+The resulting regret bound is independent of policy memory length.
+For fixed retention coefficient and cost constants, the controller
+achieves $O(\sqrt T)$ regret against the best fixed infinite-memory
+policy in this class, using $O(\log T)$ memory and arithmetic operations
+per round and one cost-subgradient query. A storage-specific block
+construction gives a matching lower bound against every causal feasible
+controller, including randomized controllers. Writing
+$\tau=(1-\alpha)^{-1}$, the minimax expected regret is
+$\Theta(\sqrt T\min\{T,\tau\}^{3/2})$ for every finite-memory
+simplex policy class and its infinite-memory extension, when
+$\alpha\in[1/2,1)$, $T\ge4$, and the positive cost constants are fixed.
+This identifies the joint horizon and retention-time dependence for
+these policy benchmarks.
 \end{abstract}
 
 \section{Introduction}
@@ -56,79 +58,158 @@ decay limits how long past decisions affect the system. When arrivals
 and costs are unknown in advance, a controller must learn a useful
 allocation rule while maintaining feasibility at every round.
 
-Our main previous work is
-Asgari and Neely~\cite{asgari2026sdac}, which introduced simplex
-disturbance-action control for the same scalar storage model.
-That work uses entropic mirror descent and obtains
-$O(\sqrt{T\log(H+1)})$ regret against policies with memory $H$,
-and $O(\sqrt{T\log\log T})$ regret against infinite-memory policies,
-for fixed model parameters. Its independent-sign lower bound establishes
-the optimal $\sqrt T$ dependence for fixed retention coefficient,
-but does not match the upper bound's dependence on retention time.
+The benchmark is the best fixed policy in a prescribed feasible
+class, evaluated on its own state trajectory under the same inputs.
+This trajectory comparison is standard in adversarial online
+control~\cite{agarwal2019online}; it accounts for the effect of a
+policy's past actions on its present costs. Here we use the simplex
+disturbance-action control (SDAC) class introduced for storage by
+Asgari and Neely~\cite{asgari2026sdac}. For fixed model parameters,
+their entropic update gives $O(\sqrt{T\log(H+1)})$ regret for memory
+$H$ and $O(\sqrt{T\log\log T})$ for the infinite-memory extension.
+Their independent-sign lower bound leaves a gap in retention-time
+dependence. We address these two gaps for the same policy benchmarks.
 
-This paper improves both the algorithm and the lower bound.
-We parameterize policies by cumulative allocation fractions and use a
-weighted Euclidean update whose weights account for storage decay.
-The cumulative representation is a bijection with the original
-simplex policy class, so the comparator class is unchanged.
-The resulting regret bound has no dependence on the memory length.
-A new block construction strengthens the lower bound to match
-the dependence on both the horizon and retention time.
+Our first contribution is a regret bound uniform in the policy memory
+length $H$ (Theorem~\ref{thm:upper}). Cumulative allocation fractions
+give a bijection with the SDAC parameters. In these coordinates, a
+weighted Euclidean geometry controls both surrogate-cost optimization
+and the tracking error caused by changing policies. The total weight
+is $\alpha\sum_{j=0}^{T-2}\alpha^j$, independently of $H$.
+For fixed model parameters, the resulting bound is $O(\sqrt T)$,
+removing the factor $\sqrt{\log(H+1)}$ while preserving the comparator
+class and feasibility at every round. A standard weighted isotonic
+projection implements the update in $O(H)$ operations.
+Geometric truncation then gives $O(\sqrt T)$ regret against the
+infinite-memory class with $O(\log T)$ memory and arithmetic per round
+for fixed $\alpha$, excluding the cost-subgradient query
+(Corollary~\ref{cor:infinite}).
 
-More precisely, let $\tau=(1-\alpha)^{-1}$, where $\alpha$ is the
-retention coefficient. For every finite-memory class and for the
-infinite-memory class, we prove that the minimax expected regret has
-order
+Our second contribution is a storage-specific lower bound that
+matches the upper bound in both horizon and retention time
+(Theorem~\ref{thm:minimax}). Let $\tau=(1-\alpha)^{-1}$.
+For every finite-memory SDAC class with $H\ge1$ and its
+infinite-memory extension, the minimax expected regret has order
 \[
 \sqrt T\min\{T,\tau\}^{3/2}
 =
 \min\{T^2,\tau^{3/2}\sqrt T\}
 \]
-when $\alpha\in[1/2,1)$, $T\ge4$, and the positive cost constants
-are fixed. The lower bound applies to every causal feasible
-controller, including randomized controllers.
+when $\alpha\in[1/2,1)$, $T\ge4$, and $L_x,L_u>0$ are fixed.
+The construction uses only binary arrivals, affine state costs, and
+two comparator policies, and applies to every causal feasible
+controller, including randomized controllers. It identifies both the
+$\tau^{3/2}\sqrt T$ regime and the $T^2$ regime when retention time
+is at least the horizon.
+
+These statements concern the known scalar dynamics, full cost feedback,
+and absence of active capacity saturation specified in
+Section~\ref{sec:model}. The comparator is fixed within the SDAC class;
+the minimax infimum allows all causal feasible controllers. The
+logarithmic implementation guarantee fixes $\alpha$, whereas the joint
+minimax theorem permits $\alpha$ to vary and uses an exact
+$T-1$-memory representation for the infinite-memory benchmark.
 
 \subsection{Related work}
 
-The closest previous work is Asgari and Neely~\cite{asgari2026sdac},
-which introduces the simplex disturbance-action policy class for
-storage control with adversarial arrivals and convex state--action
-costs. Our cumulative parameters describe exactly the same policies.
-The contribution is the choice of coordinates and weights, which
-removes the memory-dependent factor in the regret bound, together
-with a block lower bound that sharpens the dependence on storage
-retention time.
+The closest predecessor, Asgari and Neely~\cite{asgari2026sdac},
+already provides the feasible SDAC class, online clipping, inclusion
+of fixed-fraction policies, geometric truncation, and the
+independent-sign lower bound. We retain these ingredients. The advances
+are the cumulative-coordinate bound uniform in $H$ and the lower
+bound establishing the joint dependence on $T$ and $\tau$.
+In particular, optimal $\sqrt T$ dependence for fixed finite memory
+was already established there.
 
-The optimization component builds on projected online gradient
-methods~\cite{zinkevich2003online}. For dynamical systems, Agarwal
-et al.~\cite{agarwal2019online} develop online control with adversarial
-disturbances and general convex costs. Golowich
-et al.~\cite{golowich2024population} study online control of population
-dynamics, including systems with simplex structure. Li
-et al.~\cite{li2021onlineConstrained} establish regret guarantees while
-enforcing affine state and action constraints. The storage constraint
-considered here depends directly on the resource currently available.
-Every fixed policy is feasible by construction, and clipping preserves
-feasibility when its parameters change online.
+Agarwal et al.~\cite{agarwal2019online} develop disturbance-action
+policies for linear systems with adversarial disturbances and convex
+costs, obtaining regret guarantees relative to strongly stable linear
+controllers through convex surrogate losses. This provides the broader
+algorithmic setting for SDAC. Faster horizon rates are possible with
+additional cost structure: Foster and
+Simchowitz~\cite{foster2020logarithmic} obtain logarithmic regret for
+known quadratic state and control costs under adversarial disturbances.
+Our minimax statement instead ranges over adversarial convex costs
+with the stated Lipschitz and subgradient bounds, and its lower bound
+already holds for affine costs.
 
-Kumar et al.~\cite{kumar2023unbounded} formulate online convex
-optimization with unbounded memory and establish upper and lower
-bounds that quantify the influence of past decisions. Storage decay
-likewise controls the persistence of earlier actions in our model.
-Our analysis uses the explicit storage dynamics and the feasible
-policy class to obtain matching dependence on horizon and retention time.
+Online convex optimization with memory formalizes the dependence of
+current losses on earlier decisions. Anava, Hazan, and
+Mannor~\cite{anava2015memory} study finite memory and policy regret.
+Kumar, Dean, and Kleinberg~\cite{kumar2023unbounded} introduce an
+effective-memory quantity, prove matching worst-case bounds for their
+general framework, and derive log-free $O(\sqrt T)$ regret for online
+linear control. Their analysis also uses weighted norms to exploit
+decaying influence. Thus log-free regret and decay-sensitive geometry
+already have precedents. Here the policy length $H$ and physical
+retention time $\tau$ play different roles: our bound is uniform in
+$H$ but necessarily grows with $\tau$. The lower bound realizes this
+dependence within the resource-feasible storage model itself, rather
+than over an unrestricted family of losses with memory.
 
-Energy-harvesting control provides a motivating application.
-Shaviv and \"Ozg\"ur~\cite{shaviv2016universally} analyze simple
-near-optimal power policies under independent and identically
-distributed energy arrivals. Arafa et al.~\cite{arafa2018online}
-study fixed-fraction policies for general concave utilities.
-These works motivate the fixed-fraction policies contained in our
-infinite-memory class. Asgari and Neely~\cite{10.1145/3428337}
-study online convex optimization with energy-harvesting constraints
-and a regret--battery-capacity tradeoff under independent and
-identically distributed arrivals. Here both arrivals and costs may
-vary adversarially, and regret compares complete policy trajectories.
+Hard constraints have also been studied in online control.
+Li, Das, and Li~\cite{li2021onlineConstrained} enforce affine state
+and action constraints through disturbance-action policies and
+constraint tightening, assuming the existence of a strictly safe
+linear controller.
+The inequality $u_t\le\alpha x_t$ here is itself affine in the joint
+state--action pair. The useful additional structure is resource
+nonnegativity: the SDAC parameter restrictions guarantee fixed-policy
+feasibility, and clipping enforces availability along the online
+trajectory without an interior safety margin. Liu, Yang, and
+Ying~\cite{liu2023constraints} give cumulative-violation bounds for
+adversarial constraints and anytime guarantees for static constraints,
+including zero violation for affine constraints via projection. Golowich
+et al.~\cite{golowich2024population} obtain regret guarantees for
+population dynamics on the simplex. Their simplex describes the
+population state, whereas our simplex describes allocation fractions
+assigned to arrivals of different ages.
+
+Computational dependence on stability is a separate issue from
+retention dependence in regret. Brahmbhatt
+et al.~\cite{brahmbhatt2026spectral} approximate diagonalizably stable
+linear policies using spectral filters, with amortized runtime
+dependence polylogarithmic in the inverse stability margin. Our
+cumulative representation is exact for the SDAC class, and the
+implementation retains an explicit arrival buffer. Its memory choice
+scales as $O(\min\{T,1+\tau\log T\})$, becoming $O(\log T)$ when
+$\alpha$ is fixed. The contribution here is the sharp storage regret
+bound and a simple feasible implementation, rather than an improvement
+in general control's runtime dependence on stability.
+
+Storage control also has stochastic and competitive formulations.
+Qin et al.~\cite{qin2016storage} use Lyapunov optimization for
+capacity- and rate-constrained storage, with feasibility and long-run
+suboptimality guarantees under stochastic inputs. Kim
+et al.~\cite{kim2016storage} analyze online energy-storage management
+competitively, including networked storage and decay. These works
+address storage constraints under different benchmarks and information
+patterns. Our performance criterion is additive regret relative to a
+fixed feasible policy's complete trajectory; our model has no active
+capacity saturation. Thus adversarial storage control and decay are
+established settings, while the result here identifies the minimax
+rate for the specified SDAC benchmark and feedback model.
+
+For energy-harvesting communication, Shaviv and
+\"Ozg\"ur~\cite{shaviv2016universally} give near-optimal fixed-fraction
+power policies for independent and identically distributed arrivals.
+Arafa et al.~\cite{arafa2018online} extend fixed-fraction
+analysis to general concave utilities. Such policies motivate an
+important subclass of our infinite-memory comparator. Asgari and
+Neely~\cite{asgari2020bregman} study online convex optimization with
+energy-harvesting constraints and a regret--battery-capacity tradeoff
+under independent and identically distributed arrivals. Their actions
+can use the current arrival, and their fixed-action benchmark is
+constrained by mean energy supply. Here actions precede the current
+arrival, both arrivals and costs can be adversarial, and regret compares
+feasible policy trajectories with stock-dependent costs.
+
+The optimization steps use established methods: projected online
+subgradient descent~\cite{zinkevich2003online}, quadratic mirror
+descent~\cite{beck2003mirror}, and weighted isotonic regression via
+the pool-adjacent-violators algorithm~\cite{best1990isotonic}.
+Our analysis chooses their coordinates and weights to control both
+policy optimization and the storage tracking error.
 
 \section{Model and feedback}
 \label{sec:model}
@@ -354,7 +435,10 @@ $m\in\mathcal M_\infty$ give a member of $\CI$.
 The action and state identities hold at every round because
 only finitely many coordinates are used.
 
-The infinite-memory class includes every feasible fixed-fraction
+Fixed-fraction policies are widely used in energy-harvesting
+control~\cite{shaviv2016universally,arafa2018online}.
+As in the SDAC representation~\cite{asgari2026sdac}, the
+infinite-memory class includes every feasible fixed-fraction
 policy $u_t=kx_t$, $k\in[0,\alpha]$. Indeed, take
 \[
 y_i=1-\left(1-\frac{k}{\alpha}\right)^i,
@@ -552,6 +636,10 @@ Finally, \eqref{eq:lipschitz} and \eqref{eq:sensitivity} give
 
 \subsection{Controller}
 
+We apply projected online subgradient
+descent~\cite{zinkevich2003online} in the $D$ norm, equivalently
+mirror descent with quadratic regularizer
+$y^\top Dy/2$~\cite{beck2003mirror}.
 Fix a step size $\eta>0$ and initialize
 $y_1=\frac12\mathbf1$. At round $t$, compute
 \begin{equation}
@@ -614,6 +702,12 @@ The old arrival $w_{t-H}$ is used before inserting $w_t$ into
 the arrival buffer.
 
 \subsection{Weighted projection}
+
+The projection is a bounded weighted isotonic regression problem.
+We use the classical pool-adjacent-violators
+algorithm~\cite{best1990isotonic}, followed by clipping to $[0,1]$.
+The following lemma records the bounded version and its linear
+arithmetic complexity for completeness.
 
 \begin{lemma}[Bounded weighted isotonic projection]
 \label{lem:projection}
@@ -760,6 +854,11 @@ None of these bounds depends on $H$.
 
 The proof separates optimization of the fixed-policy surrogate
 costs from tracking the state generated by changing policies.
+This follows the surrogate-and-movement approach used in online
+learning with memory and disturbance-action
+control~\cite{anava2015memory,agarwal2019online,kumar2023unbounded}.
+The storage-specific step is to bound both terms in the same
+cumulative-coordinate geometry, uniformly in $H$.
 
 \begin{lemma}[Optimization and policy movement]
 \label{lem:optimization}
@@ -944,6 +1043,9 @@ Substituting this and $\tau_T\le\tau$ proves
 
 \subsection{Infinite-memory comparison}
 
+We use the geometric-tail comparison for SDAC
+policies~\cite{asgari2026sdac}, stated below in cumulative coordinates
+with the finite-horizon factor $\tau_T$.
 For $y\in\CI$, define its truncation by
 \begin{equation}
 \label{eq:truncation}
@@ -1140,6 +1242,14 @@ The lemma converts each averaged lower bound into a deterministic
 oblivious instance.
 
 \subsection{A block construction}
+
+Independent random signs held fixed within blocks expose the
+cost of memory; see, for example, the lower bounds of
+Kumar et al.~\cite{kumar2023unbounded}.
+Our construction uses recharge, clearing, holding, and reward phases
+to realize a retention-dependent separation under storage feasibility.
+It requires no state resets and uses the two endpoint policies
+in \eqref{eq:endpoints} as comparators.
 
 \begin{theorem}[Block lower bound]
 \label{thm:block}
@@ -1562,14 +1672,19 @@ joint dependence on independently varying $L_x$ and $L_u$.
 
 \section{Conclusion}
 
-Cumulative allocation fractions provide a weighted geometry for
-learning storage policies without a regret penalty that grows
-with policy memory. The resulting feasible controller achieves
-$O(\sqrt T)$ regret against infinite-memory policies for fixed
-retention coefficient, using logarithmic memory and arithmetic
-per round. The block lower bound establishes the matching
-dependence on horizon and retention time, strengthening the
-lower bound of the previous simplex-based analysis.
+Cumulative allocation fractions give an exact representation of
+the existing SDAC class in which a decay-weighted projected update
+controls optimization and tracking error uniformly in policy memory.
+For fixed model parameters, this yields $O(\sqrt T)$ regret against
+the best fixed infinite-memory SDAC policy with logarithmic memory
+and arithmetic per round, excluding the cost-subgradient query.
+The storage-specific block construction establishes the matching
+rate $\Theta(\sqrt T\min\{T,\tau\}^{3/2})$ for
+$\alpha\in[1/2,1)$, $T\ge4$, and fixed $L_x,L_u>0$.
+The optimality statement concerns these policy benchmarks under
+full cost feedback and without active capacity saturation; the
+lower bound holds even when the controller is any causal feasible
+algorithm.
 
 \bibliographystyle{plain}
 \bibliography{references}
