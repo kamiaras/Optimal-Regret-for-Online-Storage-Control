@@ -25,7 +25,7 @@ The presence of submission files does not establish that a submission or publica
 
 ## Related work and code
 
-- [Online Dynamic Resource Allocation with State Constraints](https://github.com/kamiaras/phd-last-paper) develops the simplex disturbance-action control setting.
+- [Online Dynamic Resource Allocation with State Constraints](https://github.com/kamiaras/online-dynamic-resource-allocation) develops the simplex disturbance-action control setting.
 - [Adversarial online control for finite-capacity storage](https://github.com/kamiaras/Adversarial-Online-Control-for-Finite-Capacity-Storage) contains related storage-control algorithms and experiments.
 
 Those repositories are related projects, not a verified implementation or reproduction package for this manuscript's cumulative-policy results. Check the policy parameterization, assumptions, and manuscript version before comparing results.
